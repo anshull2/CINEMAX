@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineRecommend - Admin Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f5c518;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #f5c518;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .admin-title {
+            font-size: 2.5rem;
+            color: #f5c518;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: #f5c518;
+            color: #000;
+            border-color: #f5c518;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .movie-form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f5c518;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #f5c518;
+            box-shadow: 0 0 10px rgba(245, 197, 24, 0.3);
+        }
+
+        .form-group input::placeholder, .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .admin-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(45deg, #f5c518, #e6b800);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 197, 24, 0.4);
+        }
+
+        .delete-btn {
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+        }
+
+        .movies-table {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-header {
+            background: rgba(245, 197, 24, 0.2);
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
+            gap: 1rem;
+            font-weight: bold;
+            color: #f5c518;
+        }
+
+        .table-row {
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 2fr;
+            gap: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            color: #51cf66;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #f5c518;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🎬 CineRecommend Admin</div>
+        <nav class="nav-links">
+            <a href="index.html" class="nav-link">Back to Site</a>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <h1 class="admin-title">Admin Dashboard</h1>
+        
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="add">Add Movie</button>
+            <button class="tab-btn" data-tab="manage">Manage Movies</button>
+            <button class="tab-btn" data-tab="stats">Statistics</button>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div id="add" class="tab-content active">
+            <div class="movie-form">
+                <h3 style="color: #f5c518; margin-bottom: 1rem;">Add New Movie</h3>
+                <form id="addMovieForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" id="title" placeholder="Movie title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="genre">Genre</label>
+                            <input type="text" id="genre" placeholder="e.g., Action, Drama" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Year</label>
+                            <input type="number" id="year" placeholder="Release year" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rating">Rating</label>
+                            <input type="number" id="rating" step="0.1" min="0" max="10" placeholder="0.0 - 10.0" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" rows="3" placeholder="Movie description" required></textarea>
+                    </div>
+                    <button type="submit" class="admin-btn">Add Movie</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="manage" class="tab-content">
+            <div class="movies-table">
+                <div class="table-header">
+                    <div>Title</div>
+                    <div>Genre</div>
+                    <div>Year</div>
+                    <div>Rating</div>
+                    <div>Actions</div>
+                </div>
+                <div id="moviesTableBody">
+                    <!-- Movies will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="stats" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMovies">0</div>
+                    <div class="stat-label">Total Movies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalGenres">0</div>
+                    <div class="stat-label">Genres</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgRating">0</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="latestYear">0</div>
+                    <div class="stat-label">Latest Movie</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get movies from main page or use defaults
+        let allMovies = JSON.parse(localStorage.getItem('movies')) || JSON.parse(localStorage.getItem('adminMovies')) || [
+            { id: 1, title: 'The Shawshank Redemption', genre: 'Drama', year: 1994, rating: 9.3, description: 'Two imprisoned men bond over years, finding solace and redemption.' },
+            { id: 2, title: 'The Godfather', genre: 'Crime', year: 1972, rating: 9.2, description: 'The aging patriarch of a crime dynasty transfers control to his son.' },
+            { id: 3, title: 'The Dark Knight', genre: 'Action', year: 2008, rating: 9.0, description: 'Batman faces the Joker in a battle for Gotham City.' },
+            { id: 4, title: 'Pulp Fiction', genre: 'Crime', year: 1994, rating: 8.9, description: 'Interconnected stories of crime in Los Angeles.' },
+            { id: 5, title: 'Inception', genre: 'Sci-Fi', year: 2010, rating: 8.8, description: 'A thief enters dreams to plant an idea.' }
+        ];
+        let editingMovieId = null;
+
+        function saveMovies() {
+            localStorage.setItem('adminMovies', JSON.stringify(allMovies));
+            localStorage.setItem('movies', JSON.stringify(allMovies));
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                // Remove active class from all tabs and buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding content
+                btn.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+                
+                // Load data based on tab
+                if (tabName === 'manage') {
+                    loadMovies();
+                } else if (tabName === 'stats') {
+                    loadStats();
+                }
+            });
+        });
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function loadMovies() {
+            const tableBody = document.getElementById('moviesTableBody');
+            tableBody.innerHTML = allMovies.map(movie => `
+                <div class="table-row">
+                    <div>${movie.title}</div>
+                    <div>${movie.genre}</div>
+                    <div>${movie.year}</div>
+                    <div>${movie.rating}/10</div>
+                    <div>
+                        <button class="admin-btn" onclick="editMovie(${movie.id})">Edit</button>
+                        <button class="admin-btn delete-btn" onclick="deleteMovie(${movie.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadStats() {
+            if (allMovies.length === 0) return;
+            
+            const totalMovies = allMovies.length;
+            const genres = [...new Set(allMovies.map(m => m.genre))];
+            const avgRating = (allMovies.reduce((sum, m) => sum + m.rating, 0) / totalMovies).toFixed(1);
+            const latestYear = Math.max(...allMovies.map(m => m.year));
+
+            document.getElementById('totalMovies').textContent = totalMovies;
+            document.getElementById('totalGenres').textContent = genres.length;
+            document.getElementById('avgRating').textContent = avgRating;
+            document.getElementById('latestYear').textContent = latestYear;
+        }
+
+        function editMovie(id) {
+            const movie = allMovies.find(m => m.id === id);
+            if (movie) {
+                document.getElementById('title').value = movie.title;
+                document.getElementById('genre').value = movie.genre;
+                document.getElementById('year').value = movie.year;
+                document.getElementById('rating').value = movie.rating;
+                document.getElementById('description').value = movie.description;
+                
+                editingMovieId = id;
+                
+                // Switch to add tab and update button text
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelector('[data-tab="add"]').classList.add('active');
+                document.getElementById('add').classList.add('active');
+                
+                document.querySelector('#addMovieForm button').textContent = 'Update Movie';
+            }
+        }
+
+        function deleteMovie(id) {
+            if (confirm('Are you sure you want to delete this movie?')) {
+                const index = allMovies.findIndex(m => m.id === id);
+                if (index > -1) {
+                    allMovies.splice(index, 1);
+                    saveMovies();
+                    showMessage('Movie deleted successfully', 'success');
+                    loadMovies();
+                    loadStats();
+                }
+            }
+        }
+
+        // Add/Update movie form
+        document.getElementById('addMovieForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const movieData = {
+                id: editingMovieId || Date.now(),
+                title: document.getElementById('title').value,
+                genre: document.getElementById('genre').value,
+                year: parseInt(document.getElementById('year').value),
+                rating: parseFloat(document.getElementById('rating').value),
+                description: document.getElementById('description').value
+            };
+            
+            if (editingMovieId) {
+                const index = allMovies.findIndex(m => m.id === editingMovieId);
+                if (index > -1) {
+                    allMovies[index] = movieData;
+                    showMessage('Movie updated successfully', 'success');
+                }
+            } else {
+                allMovies.push(movieData);
+                showMessage('Movie added successfully', 'success');
+            }
+            
+            saveMovies();
+            document.getElementById('addMovieForm').reset();
+            editingMovieId = null;
+            document.querySelector('#addMovieForm button').textContent = 'Add Movie';
+            loadMovies();
+            loadStats();
+        });
+
+        // Save initial movies
+        saveMovies();
+
+        // Initial load
+        window.onload = function() {
+            loadMovies();
+        };
+    </script>
+</body>
+</html>
