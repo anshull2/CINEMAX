@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineRecommend - Movie Recommendations</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #ffffff;
+            min-height: 100%;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f5c518;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(245, 197, 24, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        #userSection {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #f5c518;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23000" width="1200" height="600"/><circle fill="%23f5c518" cx="200" cy="150" r="3"/><circle fill="%23f5c518" cx="800" cy="100" r="2"/><circle fill="%23f5c518" cx="1000" cy="200" r="4"/><circle fill="%23f5c518" cx="400" cy="400" r="2"/><circle fill="%23f5c518" cx="600" cy="500" r="3"/></svg>');
+            background-size: cover;
+            background-position: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #f5c518, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #f5c518;
+            border-bottom: 2px solid #f5c518;
+            padding-bottom: 0.5rem;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #f5c518;
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .movie-info {
+            padding: 1.5rem;
+        }
+
+        .movie-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .movie-year {
+            color: #f5c518;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-genre {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: #f5c518;
+            font-size: 1.2rem;
+        }
+
+        .rating-score {
+            font-weight: bold;
+            color: #f5c518;
+        }
+
+        .watch-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(45deg, #f5c518, #e6b800);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .watch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 197, 24, 0.4);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #f5c518;
+            color: #000;
+            border-color: #f5c518;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .search-bar {
+                margin: 0;
+                max-width: 100%;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🎬 CineRecommend</div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search for movies, actors, directors..." id="searchInput">
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="nav-link" id="homeTab">Home</a>
+            <a href="#" class="nav-link" id="topRatedTab">Top Rated</a>
+            <a href="#" class="nav-link" id="trendingTab">Trending</a>
+            <a href="#" class="nav-link" id="smartTab">🤖 Smart Recommendations</a>
+            <a href="#" class="nav-link" id="watchlistTab">Watchlist</a>
+            <div id="userSection">
+                <a href="auth.html" class="nav-link" id="loginLink">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Discover Your Next Favorite Movie</h1>
+            <p>Personalized recommendations based on your taste and preferences</p>
+        </section>
+
+        <section class="main-content">
+            <h2 class="section-title">Recommended For You</h2>
+            
+            <div class="filters">
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #f5c518;">Industry:</strong>
+                    <button class="filter-btn active" data-industry="all">All</button>
+                    <button class="filter-btn" data-industry="hollywood">🎬 Hollywood</button>
+                    <button class="filter-btn" data-industry="bollywood">🎭 Bollywood</button>
+                </div>
+                <div>
+                    <strong style="color: #f5c518;">Genre:</strong>
+                    <button class="filter-btn active" data-genre="all">All Genres</button>
+                    <button class="filter-btn" data-genre="action">Action</button>
+                    <button class="filter-btn" data-genre="drama">Drama</button>
+                    <button class="filter-btn" data-genre="comedy">Comedy</button>
+                    <button class="filter-btn" data-genre="thriller">Thriller</button>
+                    <button class="filter-btn" data-genre="sci-fi">Sci-Fi</button>
+                    <button class="filter-btn" data-genre="crime">Crime</button>
+                </div>
+            </div>
+
+            <div class="movies-grid" id="moviesGrid">
+                <!-- Movies will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
